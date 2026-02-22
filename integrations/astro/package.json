@@ -1,0 +1,38 @@
+{
+  "name": "@wu-framework/astro",
+  "version": "1.0.0",
+  "description": "Astro integration for wu-framework microfrontends",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./WuApp.astro": "./WuApp.astro",
+    "./WuShell.astro": "./WuShell.astro"
+  },
+  "files": [
+    "index.js",
+    "WuApp.astro",
+    "WuShell.astro",
+    "types.d.ts",
+    "README.md"
+  ],
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "wu-framework",
+    "microfrontends",
+    "micro-frontends"
+  ],
+  "author": "Wu Framework Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "astro": ">=4.0.0",
+    "wu-framework": ">=1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wu-framework/wu-framework.git",
+    "directory": "integrations/astro"
+  },
+  "homepage": "https://wu-framework.dev/docs/integrations/astro"
+}

@@ -1,0 +1,161 @@
+{
+  "name": "wu-framework",
+  "version": "1.1.15",
+  "description": "Universal Microfrontends Framework - 8 frameworks, zero config, Shadow DOM isolation",
+  "main": "dist/wu-framework.cjs.js",
+  "module": "src/index.js",
+  "browser": "dist/wu-framework.umd.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./dist/wu-framework.cjs.js",
+      "browser": "./dist/wu-framework.umd.js"
+    },
+    "./src": "./src/index.js",
+    "./adapters": "./src/adapters/index.js",
+    "./adapters/react": "./src/adapters/react/index.js",
+    "./adapters/vue": "./src/adapters/vue/index.js",
+    "./adapters/angular": "./src/adapters/angular/index.js",
+    "./adapters/svelte": "./src/adapters/svelte/index.js",
+    "./adapters/preact": "./src/adapters/preact/index.js",
+    "./adapters/solid": "./src/adapters/solid/index.js",
+    "./adapters/lit": "./src/adapters/lit/index.js",
+    "./adapters/vanilla": "./src/adapters/vanilla/index.js",
+    "./integrations/astro": "./integrations/astro/index.js",
+    "./integrations/astro/WuApp.astro": "./integrations/astro/WuApp.astro",
+    "./integrations/astro/WuShell.astro": "./integrations/astro/WuShell.astro"
+  },
+  "scripts": {
+    "dev": "rollup -c --watch",
+    "build": "node scripts/build.js all --clean",
+    "build:dev": "rollup -c --environment BUILD_TARGET:dev",
+    "build:prod": "rollup -c --environment BUILD_TARGET:prod",
+    "build:all": "node scripts/build.js all --clean",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "microfrontends",
+    "micro-frontends",
+    "framework-agnostic",
+    "react",
+    "vue",
+    "angular",
+    "svelte",
+    "preact",
+    "solid",
+    "lit",
+    "web-components",
+    "shadow-dom",
+    "universal",
+    "zero-config",
+    "ai",
+    "llm",
+    "webmcp",
+    "mcp",
+    "tool-calling",
+    "byol"
+  ],
+  "author": "Luis Garcia",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wu-framework/wu-framework.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wu-framework/wu-framework/issues"
+  },
+  "homepage": "https://www.wu-framework.com",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "supports es6-module"
+  ],
+  "files": [
+    "src/",
+    "dist/",
+    "integrations/",
+    "README.md",
+    "LICENSE"
+  ],
+  "typesVersions": {
+    "*": {
+      "adapters/react": [
+        "src/adapters/react/index.d.ts"
+      ],
+      "adapters/vue": [
+        "src/adapters/vue/index.d.ts"
+      ],
+      "adapters/angular": [
+        "src/adapters/angular/index.d.ts"
+      ],
+      "adapters/svelte": [
+        "src/adapters/svelte/index.d.ts"
+      ],
+      "adapters/preact": [
+        "src/adapters/preact/index.d.ts"
+      ],
+      "adapters/solid": [
+        "src/adapters/solid/index.d.ts"
+      ],
+      "adapters/lit": [
+        "src/adapters/lit/index.d.ts"
+      ],
+      "adapters/vanilla": [
+        "src/adapters/vanilla/index.d.ts"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@vitest/coverage-v8": "^4.0.18",
+    "jsdom": "^28.0.0",
+    "rollup": "^4.9.0",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=14.0.0",
+    "lit": ">=2.0.0",
+    "preact": ">=10.0.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
+    "solid-js": ">=1.0.0",
+    "svelte": ">=3.0.0",
+    "vue": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    },
+    "preact": {
+      "optional": true
+    },
+    "lit": {
+      "optional": true
+    }
+  }
+}

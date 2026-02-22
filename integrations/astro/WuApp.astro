@@ -1,0 +1,63 @@
+---
+/**
+ * WuApp — Mount point for a wu micro-app.
+ *
+ * Renders a <div> and runs wu.mount() on the client to hydrate
+ * the named micro-app into it.  When `lazy` is true the mount
+ * is deferred until the element scrolls into view.
+ *
+ * @example
+ * ---
+ * import WuApp from '@wu-framework/astro/WuApp.astro';
+ * ---
+ * <WuApp name="header" />
+ * <WuApp name="dashboard" lazy />
+ */
+
+interface Props {
+  /** Name of the registered wu micro-app */
+  name: string;
+  /** Defer mounting until the element is visible */
+  lazy?: boolean;
+  /** CSS class(es) for the container div */
+  class?: string;
+  /** Inline styles for the container div */
+  style?: string;
+}
+
+const { name, lazy = false } = Astro.props;
+const id = `wu-app-${name}`;
+---
+
+<div
+  id={id}
+  class={Astro.props.class}
+  style={Astro.props.style}
+  data-wu-app={name}
+  data-wu-lazy={lazy}
+></div>
+
+<script define:vars={{ id, name, lazy }}>
+  async function mountApp() {
+    const { wu } = await import('wu-framework');
+    await wu.mount(name, `#${id}`);
+  }
+
+  if (lazy) {
+    const el = document.getElementById(id);
+    if (el) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            observer.disconnect();
+            mountApp();
+          }
+        },
+        { rootMargin: '200px' }
+      );
+      observer.observe(el);
+    }
+  } else {
+    mountApp();
+  }
+</script>

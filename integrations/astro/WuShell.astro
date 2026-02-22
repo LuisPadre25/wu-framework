@@ -1,0 +1,39 @@
+---
+/**
+ * WuShell — Layout wrapper that initializes wu-framework on the client.
+ *
+ * Wraps page content in a <slot /> and runs wu.init() with the
+ * provided app configuration once the page loads.
+ *
+ * @example
+ * ---
+ * import WuShell from '@wu-framework/astro/WuShell.astro';
+ * ---
+ * <WuShell apps={[{ name: 'header', url: '/apps/header' }]}>
+ *   <main>My page content</main>
+ * </WuShell>
+ */
+
+interface Props {
+  /** Array of micro-app definitions to register with wu.init() */
+  apps: Array<{
+    name: string;
+    url: string;
+    strategy?: 'eager' | 'lazy' | 'manual';
+  }>;
+  /** Sandbox isolation mode */
+  sandbox?: 'module' | 'strict' | 'eval';
+  /** Enable debug logging */
+  debug?: boolean;
+}
+
+const { apps, sandbox, debug = false } = Astro.props;
+---
+
+<slot />
+
+<script define:vars={{ apps, sandbox, debug }}>
+  import('wu-framework').then(({ wu }) => {
+    wu.init({ apps, sandbox, debug });
+  });
+</script>
