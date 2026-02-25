@@ -265,7 +265,7 @@ async function register(appName, Component, options = {}) {
  * <WuSlot name="my-app" url="http://localhost:3001" />
  */
 function createWuSlot(React) {
-  const { useState, useEffect, useRef, useCallback } = React;
+  const { useState, useEffect, useRef } = React;
 
   return function WuSlot({
     name,
@@ -280,57 +280,48 @@ function createWuSlot(React) {
     style = {},
     ...props
   }) {
-    const containerRef = useRef(null);
-    const appInstanceRef = useRef(null);
+    const actualAppName = appName || name;
+
+    // ID estable derivado del nombre: el div ya tiene este id desde el primer render.
+    // wu.mount(name, '#id') lo encuentra sin necesidad de innerHTML ni appendChild.
+    const containerId = `wu-slot-${actualAppName}`;
+    const mountedRef = useRef(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const actualAppName = appName || name;
-
     useEffect(() => {
       let cancelled = false;
-      const containerId = `wu-slot-${actualAppName}-${Math.random().toString(36).slice(2, 8)}`;
 
-      // Delay de 50ms para compatibilidad con React 18/19 StrictMode.
-      // En StrictMode el primer efecto se cancela inmediatamente (cancelled = true,
-      // clearTimeout) y solo el segundo efecto monta; evita doble-mount y
-      // "[Wu] App not mounted" en primera carga.
+      // Delay 50ms + flag cancelled: patrón StrictMode-safe.
+      // En StrictMode React monta → desmonta → monta; el primer ciclo cancela
+      // el timeout antes de ejecutarse; solo el segundo ciclo monta el MF.
       const timer = setTimeout(async () => {
-        if (cancelled || !containerRef.current) return;
+        if (cancelled) return;
 
         try {
           setLoading(true);
           setError(null);
 
           const wu = getWuInstance();
-          if (!wu) {
-            throw new Error('Wu Framework not initialized');
-          }
+          if (!wu) throw new Error('Wu Framework not initialized');
 
-          // Crear container interno
-          const innerContainer = document.createElement('div');
-          innerContainer.id = containerId;
-          innerContainer.style.width = '100%';
-          innerContainer.style.height = '100%';
-          containerRef.current.innerHTML = '';
-          containerRef.current.appendChild(innerContainer);
-
-          // Montar usando wu.mount() (wu.init() ya se llamó en el shell)
+          // El div#containerId ya está en el DOM (renderizado abajo).
+          // wu.mount lo usa como target; no tocamos su DOM desde JS imperativo.
           await wu.mount(actualAppName, `#${containerId}`);
 
           if (!cancelled) {
-            appInstanceRef.current = actualAppName;
+            mountedRef.current = true;
             setLoading(false);
 
+            const container = document.getElementById(containerId);
             if (onLoad) onLoad({ name: actualAppName, url });
-            if (onMount) onMount({ name: actualAppName, container: innerContainer });
+            if (onMount) onMount({ name: actualAppName, container });
           }
         } catch (err) {
           if (!cancelled) {
             console.error(`[WuSlot] Error loading ${actualAppName}:`, err);
             setError(err.message || 'Failed to load microfrontend');
             setLoading(false);
-
             if (onError) onError(err);
           }
         }
@@ -340,19 +331,16 @@ function createWuSlot(React) {
         cancelled = true;
         clearTimeout(timer);
 
-        if (appInstanceRef.current) {
+        if (mountedRef.current) {
           if (onUnmount) onUnmount({ name: actualAppName });
-
           const wu = getWuInstance();
-          if (wu) {
-            wu.unmount(actualAppName).catch(() => {});
-          }
-          appInstanceRef.current = null;
+          if (wu) wu.unmount(actualAppName).catch(() => {});
+          mountedRef.current = false;
         }
       };
     }, [actualAppName, url, onLoad, onError, onMount, onUnmount]);
 
-    // Render de error
+    // Estado de error
     if (error) {
       return React.createElement('div', {
         className: `wu-slot wu-slot-error ${className}`,
@@ -371,27 +359,33 @@ function createWuSlot(React) {
       ]);
     }
 
-    // Render principal
-    return React.createElement('div', {
-      ref: containerRef,
-      className: `wu-slot ${loading ? 'wu-slot-loading' : 'wu-slot-loaded'} ${className}`,
-      style: {
-        minHeight: '100px',
-        position: 'relative',
-        ...style
-      },
-      'data-wu-app': actualAppName,
-      'data-wu-url': url,
-      ...props
-    }, loading && (fallback || React.createElement('div', {
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        color: '#666'
-      }
-    }, `Loading ${name}...`)));
+    // Render principal: Fragment con fallback y div de montaje como HERMANOS.
+    //
+    // REGLA CRÍTICA: el div#containerId NO debe tener hijos React.
+    // wu.mount inyecta el MF (otro createRoot) dentro de ese div. Si React también
+    // administra hijos ahí, al desmontar el fallback llama removeChild sobre nodos
+    // que el MF ya reemplazó → "The node to be removed is not a child of this node".
+    //
+    // Solución: fallback y mount-target como hermanos en un Fragment pasados como
+    // argumentos separados a createElement (NO como array; el array rompe la
+    // reconciliación). React solo gestiona el fallback; el interior del mount-target
+    // lo controla exclusivamente el MF.
+    const defaultFallback = React.createElement('div', {
+      style: { display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', color: '#666' }
+    }, `Loading ${name}...`);
+
+    return React.createElement(React.Fragment, null,
+      loading
+        ? React.createElement('div', { className: `wu-slot-fallback ${className}` }, fallback || defaultFallback)
+        : null,
+      React.createElement('div', Object.assign({
+        id: containerId,
+        className: `wu-slot ${loading ? 'wu-slot-loading' : 'wu-slot-loaded'}`,
+        'data-wu-app': actualAppName,
+        'data-wu-url': url,
+        style: Object.assign({ width: '100%', minHeight: loading ? 0 : '200px' }, style)
+      }, props))
+    );
   };
 }
 

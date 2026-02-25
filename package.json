@@ -1,6 +1,6 @@
 {
   "name": "wu-framework",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "description": "Universal Microfrontends Framework - 8 frameworks, zero config, Shadow DOM isolation",
   "main": "dist/wu-framework.cjs.js",
   "module": "src/index.js",
@@ -113,7 +113,7 @@
     }
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
