@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://wu-framework.dev/favicon.svg" width="80" alt="Wu Framework" />
+  <img src="https://raw.githubusercontent.com/LuisPadre25/wu-framework/main/wu-logo.png" width="80" alt="Wu Framework" />
 </p>
 
 <h1 align="center">Wu Framework</h1>
@@ -10,16 +10,16 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/wu-framework"><img src="https://img.shields.io/npm/v/wu-framework.svg?color=8b5cf6&label=npm" alt="npm version" /></a>
-  <a href="https://github.com/wu-framework/wu-framework/actions"><img src="https://img.shields.io/github/actions/workflow/status/wu-framework/wu-framework/ci.yml?label=tests&color=10b981" alt="tests" /></a>
+  <a href="https://github.com/LuisPadre25/wu-framework/actions"><img src="https://img.shields.io/github/actions/workflow/status/LuisPadre25/wu-framework/ci.yml?label=tests&color=10b981" alt="tests" /></a>
   <img src="https://img.shields.io/badge/tests-650%20passed-10b981" alt="650 tests" />
   <img src="https://img.shields.io/badge/dependencies-0-8b5cf6" alt="zero deps" />
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
 </p>
 
 <p align="center">
-  <a href="https://wu-framework.dev">Documentation</a> &middot;
-  <a href="https://wu-framework.dev/docs/quick-start">Quick Start</a> &middot;
-  <a href="https://wu-framework.dev/docs/ai/overview">AI Integration</a> &middot;
+  <a href="https://www.wu-framework.com">Documentation</a> &middot;
+  <a href="https://www.wu-framework.com/docs/quick-start">Quick Start</a> &middot;
+  <a href="https://www.wu-framework.com/docs/ai/overview">AI Integration</a> &middot;
   <a href="#wucommerce--real-world-example">Live Example</a>
 </p>
 
@@ -345,7 +345,7 @@ npm run test:coverage  # Coverage report
 | `wu-framework.esm.js` | ES Module | Bundler imports |
 | `wu-framework.cjs.js` | CommonJS | Node.js require |
 | `wu-framework.umd.js` | UMD | CDN / script tag |
-| `wu-framework.dev.js` | ES Module | Development |
+| `www.wu-framework.com.js` | ES Module | Development |
 
 ---
 
@@ -376,20 +376,20 @@ npm run test:coverage  # Coverage report
 
 ## Documentation
 
-Full documentation at **[wu-framework.dev](https://wu-framework.dev)**
+Full documentation at **[www.wu-framework.com](https://www.wu-framework.com)**
 
-- [Quick Start](https://wu-framework.dev/docs/quick-start) — Get running in 5 minutes
-- [Getting Started](https://wu-framework.dev/docs/getting-started) — Deeper tutorial with cross-app communication
-- [API Reference](https://wu-framework.dev/docs/core/api) — Full API docs
-- [Event Bus](https://wu-framework.dev/docs/core/event-bus) — Inter-app communication
-- [Shared Store](https://wu-framework.dev/docs/core/store) — Cross-app reactive state
-- [Sandbox](https://wu-framework.dev/docs/core/sandbox) — JS isolation strategies
-- [AI Overview](https://wu-framework.dev/docs/ai/overview) — 4 AI paradigms
-- [AI Actions](https://wu-framework.dev/docs/ai/actions) — Register tools for the LLM
-- [Browser Actions](https://wu-framework.dev/docs/ai/browser-actions) — 10 built-in browser tools
-- [MCP Server](https://wu-framework.dev/docs/ai/mcp-server) — Connect AI agents to live apps
-- [CSS Isolation](https://wu-framework.dev/docs/guides/css-isolation) — Shadow DOM style modes
-- [Deployment](https://wu-framework.dev/docs/guides/deployment) — Production deployment guide
+- [Quick Start](https://www.wu-framework.com/docs/quick-start) — Get running in 5 minutes
+- [Getting Started](https://www.wu-framework.com/docs/getting-started) — Deeper tutorial with cross-app communication
+- [API Reference](https://www.wu-framework.com/docs/core/api) — Full API docs
+- [Event Bus](https://www.wu-framework.com/docs/core/event-bus) — Inter-app communication
+- [Shared Store](https://www.wu-framework.com/docs/core/store) — Cross-app reactive state
+- [Sandbox](https://www.wu-framework.com/docs/core/sandbox) — JS isolation strategies
+- [AI Overview](https://www.wu-framework.com/docs/ai/overview) — 4 AI paradigms
+- [AI Actions](https://www.wu-framework.com/docs/ai/actions) — Register tools for the LLM
+- [Browser Actions](https://www.wu-framework.com/docs/ai/browser-actions) — 10 built-in browser tools
+- [MCP Server](https://www.wu-framework.com/docs/ai/mcp-server) — Connect AI agents to live apps
+- [CSS Isolation](https://www.wu-framework.com/docs/guides/css-isolation) — Shadow DOM style modes
+- [Deployment](https://www.wu-framework.com/docs/guides/deployment) — Production deployment guide
 
 ---
 
