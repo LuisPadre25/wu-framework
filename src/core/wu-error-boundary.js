@@ -314,19 +314,33 @@ export class WuErrorBoundary {
    * @param {Object} context - Contexto
    */
   logError(error, context) {
+    // Truncate stack to first 5 lines to prevent retaining large object references
+    const stack = error.stack ? error.stack.split('\n').slice(0, 5).join('\n') : '';
+
+    // Shallow-copy context to avoid retaining references to live objects
+    const safeContext = {};
+    for (const key of Object.keys(context)) {
+      const val = context[key];
+      if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean' || val === null) {
+        safeContext[key] = val;
+      } else {
+        safeContext[key] = String(val);
+      }
+    }
+
     const errorEntry = {
       error: {
         name: error.name,
         message: error.message,
-        stack: error.stack
+        stack
       },
-      context,
+      context: safeContext,
       timestamp: Date.now()
     };
 
     this.errorLog.push(errorEntry);
 
-    // Mantener límite de log
+    // Maintain log limit
     if (this.errorLog.length > this.maxErrorLog) {
       this.errorLog.shift();
     }

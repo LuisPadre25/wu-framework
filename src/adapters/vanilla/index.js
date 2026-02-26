@@ -146,7 +146,7 @@ async function register(appName, config, options = {}) {
   }
 
   // Estado local de la app
-  let appState = { ...state };
+  const appState = { ...state };
 
   // Función de mount
   const mountApp = (container) => {

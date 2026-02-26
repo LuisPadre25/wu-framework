@@ -333,6 +333,20 @@ export class WuCore {
     } catch (error) {
       logger.wuError(`Mount attempt ${attempt + 1} failed for ${appName}:`, error);
 
+      // Cleanup sandbox to prevent orphaned shadow DOMs
+      try {
+        if (this.sandbox && this.sandbox.sandboxes && this.sandbox.sandboxes.has(appName)) {
+          const sb = this.sandbox.sandboxes.get(appName);
+          if (sb && sb.proxySandbox) {
+            sb.proxySandbox.deactivate();
+          }
+          this.sandbox.sandboxes.delete(appName);
+          logger.wuDebug(`Sandbox cleaned up after mount failure for ${appName}`);
+        }
+      } catch (cleanupError) {
+        logger.wuWarn(`Sandbox cleanup failed for ${appName}:`, cleanupError);
+      }
+
       // Use error boundary for intelligent error handling
       const errorResult = await this.errorBoundary.handle(error, {
         appName,
@@ -671,7 +685,7 @@ export class WuCore {
    * Intelligently resolves module paths with real-time validation
    */
   async resolveModulePath(app) {
-    let entryFile = app.manifest?.entry || 'main.js';
+    const entryFile = app.manifest?.entry || 'main.js';
     const baseUrl = app.url.replace(/\/$/, ''); // Remove trailing slash
 
     // Normalize path: Remove duplicated directories

@@ -16,6 +16,52 @@ import { logger } from './wu-logger.js';
 export class WuScriptExecutor {
 
   /**
+   * Dangerous patterns that indicate prototype pollution, sandbox escape,
+   * or direct access to sensitive APIs. Each entry is a regex paired with
+   * a human-readable label used in error messages.
+   *
+   * This is a tripwire, not a full parser. It catches the most common
+   * attack vectors without the overhead of AST analysis.
+   */
+  static DANGEROUS_PATTERNS = [
+    // Prototype pollution vectors
+    { pattern: /constructor\s*\[\s*['"`]constructor['"`]\s*\]/, label: 'constructor chain access (sandbox escape)' },
+    { pattern: /__proto__/, label: '__proto__ access (prototype pollution)' },
+
+    // Sandbox escape via proxy introspection
+    { pattern: /Object\s*\.\s*getPrototypeOf\s*\(\s*proxy\s*\)/, label: 'Object.getPrototypeOf(proxy) (sandbox escape)' },
+
+    // Dynamic code generation that bypasses the sandbox
+    { pattern: /Function\s*\(\s*['"`]/, label: 'Function() constructor (dynamic code generation)' },
+    { pattern: /\beval\s*\(/, label: 'eval() (dynamic code execution)' },
+
+    // Dynamic import escapes the sandbox entirely (runs in global scope)
+    { pattern: /\bimport\s*\(/, label: 'import() (dynamic import escapes sandbox)' },
+
+    // Direct cookie access (should go through proxy traps, not raw document)
+    { pattern: /document\s*\.\s*cookie/, label: 'document.cookie (direct cookie access)' },
+  ];
+
+  /**
+   * Validate script text against known dangerous patterns before execution.
+   * Throws if any pattern matches. This is intentionally lightweight --
+   * pattern detection only, not a full parse.
+   *
+   * @param {string} scriptText - The raw script to validate
+   * @param {string} appName - App identifier (for error context)
+   * @throws {Error} If a dangerous pattern is detected
+   */
+  _validateScript(scriptText, appName) {
+    for (const { pattern, label } of WuScriptExecutor.DANGEROUS_PATTERNS) {
+      if (pattern.test(scriptText)) {
+        const msg = `[ScriptExecutor] Blocked dangerous pattern in "${appName}": ${label}`;
+        logger.wuError(msg);
+        throw new Error(msg);
+      }
+    }
+  }
+
+  /**
    * Execute a script string inside the proxy sandbox.
    *
    * @param {string} scriptText - JavaScript code to execute
@@ -30,6 +76,8 @@ export class WuScriptExecutor {
     const { strictGlobal = true, sourceUrl = '' } = options;
 
     if (!scriptText || !scriptText.trim()) return;
+
+    this._validateScript(scriptText, appName);
 
     const sourceComment = sourceUrl ? `\n//# sourceURL=wu-sandbox:///${appName}/${sourceUrl}\n` : '';
 

@@ -11,7 +11,7 @@ import { logger } from './wu-logger.js';
 
 
 export class WuPluginSystem {
-  constructor(core) {
+  constructor(core, options = {}) {
     this._core = core; // Privado - no expuesto a plugins
     this.plugins = new Map();
     this.hooks = new Map();
@@ -35,7 +35,7 @@ export class WuPluginSystem {
     ];
 
     // 🔐 Timeout para hooks (evita que plugins bloqueen)
-    this.hookTimeout = 5000; // 5 segundos
+    this.hookTimeout = options.hookTimeout || 5000; // Default: 5 segundos
 
     this.availableHooks.forEach(hook => {
       this.hooks.set(hook, []);
@@ -106,8 +106,61 @@ export class WuPluginSystem {
       logger.warn('[WuPlugin] ⚠️ Plugin has unsafe access to core!');
     }
 
-    // Congelar API para evitar modificaciones
-    return Object.freeze(api);
+    // Congelar API recursivamente para evitar modificaciones en cualquier nivel
+    return WuPluginSystem._deepFreeze(api);
+  }
+
+  /**
+   * Deep-freeze an object and all its nested plain objects and arrays.
+   * Functions, DOM nodes, and other non-plain types are left untouched
+   * so they remain callable / functional. A WeakSet guards against
+   * circular references.
+   *
+   * @param {*} obj - The value to deep-freeze
+   * @param {WeakSet} [seen] - Internal tracker for circular references
+   * @returns {*} The same object, now deeply frozen
+   */
+  static _deepFreeze(obj, seen) {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    // Only freeze plain objects and arrays.
+    // Functions must stay invocable; DOM nodes, class instances, etc.
+    // should not be tampered with.
+    const dominated = typeof obj === 'object';
+    if (!dominated) {
+      return obj;
+    }
+
+    const isPlainObject =
+      Object.getPrototypeOf(obj) === Object.prototype ||
+      Object.getPrototypeOf(obj) === null;
+    const isArray = Array.isArray(obj);
+
+    if (!isPlainObject && !isArray) {
+      return obj;
+    }
+
+    // Circular-reference guard
+    if (!seen) {
+      seen = new WeakSet();
+    }
+    if (seen.has(obj)) {
+      return obj;
+    }
+    seen.add(obj);
+
+    // Recurse into own enumerable properties
+    const keys = Object.keys(obj);
+    for (let i = 0; i < keys.length; i++) {
+      const value = obj[keys[i]];
+      if (value !== null && value !== undefined && typeof value === 'object') {
+        WuPluginSystem._deepFreeze(value, seen);
+      }
+    }
+
+    return Object.freeze(obj);
   }
 
   /**

@@ -8,6 +8,15 @@
  * - API minimalista: get(), set(), on()
  */
 
+/**
+ * @typedef {Object} WuStoreMetrics
+ * @property {number} reads - Total read operations
+ * @property {number} writes - Total write operations
+ * @property {number} notifications - Total notifications sent
+ * @property {number} bufferUtilization - Ring buffer utilization (0-1)
+ * @property {number} listenerCount - Active listener count
+ */
+
 export class WuStore {
   constructor(bufferSize = 256) {
     // Ring Buffer configuration
@@ -63,8 +72,9 @@ export class WuStore {
   set(path, value) {
     this.metrics.writes++;
 
-    // Write to ring buffer (lock-free)
-    const sequence = this.cursor++;
+    // Write to ring buffer (lock-free, wraps at buffer boundary)
+    const sequence = this.cursor;
+    this.cursor = (this.cursor + 1) % (this.bufferSize * this.bufferSize);
     const index = sequence & this.mask;
 
     // Reuse buffer slot (zero allocation)
@@ -151,7 +161,7 @@ export class WuStore {
   getMetrics() {
     return {
       ...this.metrics,
-      bufferUtilization: (this.cursor % this.bufferSize) / this.bufferSize,
+      bufferUtilization: Math.min(1, this.cursor / this.bufferSize),
       listenerCount: this.listeners.size + this.patternListeners.size
     };
   }

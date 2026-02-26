@@ -1,0 +1,50 @@
+[
+  {
+    "id": "3f05b721-d662-4242-bdd6-6e62835a1929",
+    "planId": "da0ab147-8627-429b-a334-3254bd769f3a",
+    "decision": "Mantener JavaScript puro, agregar JSDoc exhaustivo en lugar de migrar a TypeScript",
+    "rationale": "Migrar a TS es un cambio masivo que requiere su propio plan. JSDoc da type safety sin romper el build actual.",
+    "alternatives": [
+      "Migrar todo a TypeScript",
+      "Solo agregar .d.ts files"
+    ],
+    "category": "architecture",
+    "createdAt": "2026-02-26T01:27:18.403Z"
+  },
+  {
+    "id": "cd8e31bd-09f1-44ee-991c-ab6701358487",
+    "planId": "da0ab147-8627-429b-a334-3254bd769f3a",
+    "decision": "Implementar deep-freeze con recursión propia en lugar de dependencia externa",
+    "rationale": "Wu Framework tiene zero dependencies como principio. No agregar libs externas.",
+    "alternatives": [
+      "Usar deep-freeze npm package",
+      "Usar Proxy read-only"
+    ],
+    "category": "implementation",
+    "createdAt": "2026-02-26T01:27:18.403Z"
+  },
+  {
+    "id": "576fc6a8-e44f-4adc-a850-b719ab2a1b29",
+    "planId": "7dbb0eda-8b0c-4db8-afa1-d01516e10ac6",
+    "decision": "Usar ESLint flat config (eslint.config.js) en lugar del formato legacy (.eslintrc)",
+    "rationale": "ESLint 9+ depreca el formato legacy. Flat config es el futuro y mas simple.",
+    "alternatives": [
+      ".eslintrc.json",
+      ".eslintrc.js"
+    ],
+    "category": "tooling",
+    "createdAt": "2026-02-26T01:42:52.366Z"
+  },
+  {
+    "id": "0c33135d-1ec8-4cbb-8d47-58897fd0c5f5",
+    "planId": "7dbb0eda-8b0c-4db8-afa1-d01516e10ac6",
+    "decision": "JSDoc en lugar de TypeScript migration",
+    "rationale": "Mantiene zero build complexity, el proyecto es JS puro. JSDoc da type checking via tsc --checkJs sin cambiar el build.",
+    "alternatives": [
+      "Full TypeScript migration",
+      "Solo .d.ts files"
+    ],
+    "category": "architecture",
+    "createdAt": "2026-02-26T01:42:52.366Z"
+  }
+]

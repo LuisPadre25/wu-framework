@@ -10,6 +10,25 @@
  */
 import { logger } from './wu-logger.js';
 
+/**
+ * @typedef {Object} WuEvent
+ * @property {string} name - Event name
+ * @property {*} data - Event payload
+ * @property {number} timestamp - Event timestamp
+ * @property {string} appName - Source app name
+ * @property {Object} meta - Additional metadata
+ * @property {boolean} verified - Whether origin was verified
+ */
+
+/**
+ * @typedef {Object} WuEventBusConfig
+ * @property {number} [maxHistory=100] - Maximum events in history
+ * @property {boolean} [enableReplay=true] - Enable event replay
+ * @property {boolean} [enableWildcards=true] - Enable wildcard matching
+ * @property {boolean} [logEvents=false] - Log all events
+ * @property {boolean} [strictMode=false] - Reject unauthorized events
+ * @property {boolean} [validateOrigin=true] - Validate event origins
+ */
 
 export class WuEventBus {
   constructor() {
@@ -20,15 +39,20 @@ export class WuEventBus {
     this.authorizedApps = new Map(); // appName -> { token, permissions }
     this.trustedEvents = new Set(['wu:*', 'system:*']); // Eventos del sistema
 
+    // Auto-detect production environment for strictMode default
+    const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
+
     this.config = {
       maxHistory: 100,
       enableReplay: true,
       enableWildcards: true,
       logEvents: false,
       // 🔐 Opciones de seguridad
-      strictMode: false, // Si true, rechaza eventos de apps no autorizadas
+      strictMode: isProduction, // Auto-enabled in production, permissive in development
       validateOrigin: true // Valida que appName sea una app registrada
     };
+
+    this._permissiveWarned = false;
 
     this.stats = {
       emitted: 0,
@@ -128,6 +152,19 @@ export class WuEventBus {
   }
 
   /**
+   * WARN PERMISSIVE MODE: Log a one-time warning when strictMode is off
+   * Alerts developers that events are flowing without authorization checks
+   */
+  _warnPermissiveMode() {
+    if (this._permissiveWarned) return;
+    this._permissiveWarned = true;
+    logger.warn(
+      '[WuEventBus] strictMode is disabled. Events are emitted without authorization checks. ' +
+      'Enable strictMode for production by calling enableStrictMode() or setting NODE_ENV=production.'
+    );
+  }
+
+  /**
    * 📢 EMIT: Emitir evento con validación de origen
    * @param {string} eventName - Nombre del evento
    * @param {*} data - Datos del evento
@@ -135,6 +172,11 @@ export class WuEventBus {
    */
   emit(eventName, data, options = {}) {
     const appName = options.appName || 'unknown';
+
+    // Warn once if running in permissive mode (strictMode off)
+    if (!this.config.strictMode) {
+      this._warnPermissiveMode();
+    }
 
     // 🔐 Validar origen si está habilitado
     if (this.config.validateOrigin && this.config.strictMode) {

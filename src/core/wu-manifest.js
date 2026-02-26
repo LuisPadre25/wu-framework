@@ -302,6 +302,29 @@ export class WuManifest {
       }
     }
 
+    // Validate optional fields
+    if (manifest.styleMode !== undefined) {
+      const validModes = ['shared', 'isolated', 'fully-isolated'];
+      if (!validModes.includes(manifest.styleMode)) {
+        logger.warn(`[WuManifest] Invalid styleMode "${manifest.styleMode}", defaulting to "shared". Valid: ${validModes.join(', ')}`);
+        manifest.styleMode = 'shared';
+      }
+    }
+
+    if (manifest.version !== undefined && typeof manifest.version !== 'string') {
+      logger.warn('[WuManifest] version must be a string, ignoring');
+      delete manifest.version;
+    }
+
+    if (manifest.folder !== undefined) {
+      if (typeof manifest.folder !== 'string') {
+        logger.warn('[WuManifest] folder must be a string, ignoring');
+        delete manifest.folder;
+      } else if (this._hasDangerousPatterns(manifest.folder)) {
+        throw new Error('folder contains dangerous patterns');
+      }
+    }
+
     // Normalizar y limpiar manifest
     return this.normalize(manifest);
   }

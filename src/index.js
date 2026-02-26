@@ -25,14 +25,24 @@ if (typeof window !== 'undefined' && window.wu && window.wu._isWuFramework) {
 } else {
   wu = new WuCore();
   wu._isWuFramework = true;
+
+  // Also store on a Symbol key for collision-safe access
+  if (typeof window !== 'undefined') {
+    const WU_KEY = Symbol.for('wu-framework');
+    window[WU_KEY] = wu;
+  }
 }
 
 // Expose globally for microfrontends
 if (typeof window !== 'undefined') {
+  // Warn if window.wu exists but is not a Wu Framework instance
+  if (window.wu && !window.wu._isWuFramework) {
+    console.warn('[Wu Framework] window.wu already exists and is not a Wu Framework instance. Overwriting. Use Symbol.for("wu-framework") for collision-safe access.');
+  }
   window.wu = wu;
 
   if (!wu.version) {
-    wu.version = '1.1.8';
+    wu.version = '1.1.17';
     wu.info = {
       name: 'Wu Framework',
       description: 'Universal Microfrontends',

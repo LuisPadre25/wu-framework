@@ -397,6 +397,38 @@ Full documentation at **[www.wu-framework.com](https://www.wu-framework.com)**
 
 Chrome 80+, Firefox 78+, Safari 14+, Edge 80+. Shadow DOM v1 required.
 
+---
+
+<div align="center">
+
+### What if Wu Framework could think without thinking?
+
+</div>
+
+```
+User: "add to cart"
+
+                  Before                              After
+                  ──────                              ─────
+          wu.ai.send() → LLM                 wu.ai.send() → ???
+          ~2,000 ms                           ~0.73 ms
+          $0.003 per call                     $0.000
+```
+
+Something is coming. It learned from every LLM call you ever made. It doesn't need the cloud anymore.
+
+**99.79% accuracy. 0.73 milliseconds. 800 KB. Zero GPU. Zero internet.**
+
+274x faster than neural networks. And it dreams.
+
+<div align="center">
+
+**COMING SOON**
+
+</div>
+
+---
+
 ## Contributing
 
 Contributions welcome. Please open an issue first to discuss what you'd like to change.

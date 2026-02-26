@@ -13,8 +13,9 @@
 import { logger } from './wu-logger.js';
 
 export class WuProxySandbox {
-  constructor(appName) {
+  constructor(appName, options = {}) {
     this.appName = appName;
+    this.options = options;
     this.proxy = null;
     this.fakeWindow = Object.create(null);
     this.active = false;

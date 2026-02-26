@@ -1,0 +1,33 @@
+[
+  {
+    "id": "e58eaab2-c1f1-42a6-a64f-781cd18861b6",
+    "key": "projectType",
+    "value": "Node.js Backend Service",
+    "description": "Inferido de git",
+    "source": "git",
+    "createdAt": "2026-02-26T01:27:18.401Z",
+    "updatedAt": "2026-02-26T01:42:52.366Z"
+  },
+  {
+    "id": "f7870acd-586f-4efc-a42d-f45e19da396a",
+    "key": "mainLanguages",
+    "value": [
+      "JavaScript"
+    ],
+    "description": "Inferido de git",
+    "source": "git",
+    "createdAt": "2026-02-26T01:27:18.401Z",
+    "updatedAt": "2026-02-26T01:42:52.366Z"
+  },
+  {
+    "id": "5cc9bf0a-baa1-4e57-a0e6-32636a2d323e",
+    "key": "frameworks",
+    "value": [
+      "Node.js"
+    ],
+    "description": "Inferido de git",
+    "source": "git",
+    "createdAt": "2026-02-26T01:27:18.401Z",
+    "updatedAt": "2026-02-26T01:42:52.366Z"
+  }
+]

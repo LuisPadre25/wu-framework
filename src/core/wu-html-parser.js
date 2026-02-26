@@ -62,19 +62,28 @@ export class WuHtmlParser {
       return this._cache.get(cacheKey);
     }
 
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
 
     const inlineScripts = [];
     const externalScripts = [];
     const inlineStyles = [];
     const externalStyles = [];
 
-    this._extractResources(temp, {
+    const ctx = {
       inlineScripts, externalScripts,
       inlineStyles, externalStyles,
       baseUrl
-    });
+    };
+
+    // DOMParser moves <style>, <link>, and some <script> tags to <head>.
+    // Extract resources from both head and body to capture everything.
+    if (doc.head) {
+      this._extractResources(doc.head, ctx);
+    }
+
+    const temp = doc.body || doc.documentElement;
+    this._extractResources(temp, ctx);
 
     const result = {
       dom: temp.innerHTML,

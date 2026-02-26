@@ -6,10 +6,17 @@ import { WuStore } from '../../src/core/wu-store.js';
 // Suppress logger
 vi.mock('../../src/core/wu-logger.js', () => ({
   logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
     wuDebug: vi.fn(),
     wuInfo: vi.fn(),
     wuWarn: vi.fn(),
-    wuError: vi.fn()
+    wuError: vi.fn(),
+    setLevel: vi.fn(),
+    setDevelopment: vi.fn(),
+    shouldLog: vi.fn(() => false)
   }
 }));
 

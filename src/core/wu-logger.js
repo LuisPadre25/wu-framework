@@ -23,19 +23,27 @@ export class WuLogger {
    * Detectar si estamos en desarrollo
    */
   detectEnvironment() {
-    // Múltiples formas de detectar desarrollo
-    return (
-      // Vite development
-      window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1' ||
-      window.location.port !== '' ||
-      // NODE_ENV si está disponible
-      (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') ||
-      // URL params para forzar debug
-      new URLSearchParams(window.location.search).has('wu-debug') ||
-      // Manual override
-      window.WU_DEBUG === true
-    );
+    // 1. Explicit flag takes priority
+    if (typeof window !== 'undefined' && window.WU_DEBUG === true) return true;
+    if (typeof window !== 'undefined' && window.WU_DEBUG === false) return false;
+
+    // 2. NODE_ENV check (works in bundlers and Node)
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') return false;
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') return true;
+
+    // 3. Browser heuristics (only if window exists)
+    if (typeof window !== 'undefined' && window.location) {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]') return true;
+
+      // URL param override
+      try {
+        if (new URLSearchParams(window.location.search).has('wu-debug')) return true;
+      } catch {}
+    }
+
+    // 4. Default: assume production
+    return false;
   }
 
   /**

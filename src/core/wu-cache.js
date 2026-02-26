@@ -32,6 +32,9 @@ export class WuCache {
       cooldownUntil: 0
     };
 
+    // Rate limit notification flag (log only once per cooldown)
+    this._rateLimitNotified = false;
+
     // Memory cache
     this.memoryCache = new Map();
 
@@ -66,6 +69,7 @@ export class WuCache {
       }
       // Cooldown terminado
       this.rateLimiting.inCooldown = false;
+      this._rateLimitNotified = false;
       this.rateLimiting.operations = [];
     }
 
@@ -91,7 +95,22 @@ export class WuCache {
   }
 
   /**
-   * 🔐 GET RATE LIMIT STATUS
+   * Handle rate-limited operations: log once per cooldown, return diagnostic object
+   * @param {string} operation - The operation that was rate limited ('get' or 'set')
+   * @param {string} key - The cache key that was rejected
+   * @returns {{ rateLimited: true, operation: string, key: string }}
+   */
+  _onRateLimited(operation, key) {
+    if (!this._rateLimitNotified) {
+      const cooldownRemaining = Math.max(0, this.rateLimiting.cooldownUntil - Date.now());
+      logger.warn(`[WuCache] Rate limited: ${operation} for key "${key}" rejected. ${cooldownRemaining}ms remaining in cooldown.`);
+      this._rateLimitNotified = true;
+    }
+    return { rateLimited: true, operation, key };
+  }
+
+  /**
+   * GET RATE LIMIT STATUS
    */
   getRateLimitStatus() {
     const now = Date.now();
@@ -115,7 +134,8 @@ export class WuCache {
   get(key) {
     // 🔐 Check rate limit
     if (!this._checkRateLimit()) {
-      return null; // Silently fail on rate limit
+      this._onRateLimited('get', key);
+      return null;
     }
 
     // 1. Buscar en memoria
@@ -162,7 +182,8 @@ export class WuCache {
   set(key, value, ttl) {
     // 🔐 Check rate limit
     if (!this._checkRateLimit()) {
-      return false; // Reject on rate limit
+      this._onRateLimited('set', key);
+      return false;
     }
 
     try {

@@ -695,7 +695,7 @@ function createWuSlotConfig() {
 
     // Implementación JavaScript pura para usar sin .svelte
     createInstance: (target, props) => {
-      let container = document.createElement('div');
+      const container = document.createElement('div');
       container.className = 'wu-slot';
       container.style.minHeight = '100px';
       container.style.position = 'relative';
