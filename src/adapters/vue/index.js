@@ -190,6 +190,14 @@ async function register(appName, RootComponent, options = {}) {
         setup(app);
       }
 
+      // Error handlers for debugging
+      app.config.errorHandler = (err, instance, info) => {
+        console.error(`[WuVue] ${appName} error in ${info}:`, err);
+      };
+      app.config.warnHandler = (msg, instance, trace) => {
+        console.warn(`[WuVue] ${appName} warn:`, msg);
+      };
+
       // Proveer información del contexto Wu
       app.provide('wuAppName', appName);
       app.provide('wuInstance', getWuInstance());
